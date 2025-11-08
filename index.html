@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOYONA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="images/logo2.png"/>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+ 
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Maintain 16:9 aspect ratio */
+    .aspect-16-9 {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 9 / 16 * 100 */
+    }
+
+    .aspect-16-9 > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+      
+  </style>
+</head>
+<body class="bg-blue-800 text-black">
+
+  <!-- 🌈 NAVBAR -->
+  <header class="fixed w-full top-0 z-50 bg-white/70 backdrop-blur-xl shadow-lg transition-all">
+
+<div class="w-full bg-blue-800 overflow-hidden py-1">
+  <div class="flex gap-10 text-white font-semibold animate-marquee2 whitespace-nowrap text-center justify-center  ">
+    <span>Order Today — Get Free Shipping!</span>
+  </div>
+</div>
+
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center space-x-2 ">
+            <img src="images/logo2.png" 
+                 alt="Sakhi Saheli Logo" 
+                 class="h-14 w-auto object-contain" />
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center space-x-6">  
+            <!-- Search Bar -->
+            <div class="relative">
+                <input type="text" placeholder="Search..." 
+                       class="w-48 px-4 py-2 rounded-full bg-white text-black placeholder-blue-800">
+                <button class="absolute right-3 top-2 text-blue-800">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <!-- Navigation Links -->
+            <nav class="flex space-x-6 font-bold text-lg text-black">
+                <a href="#home"       class="hover:text-black text-blue-800 transition">Home</a>
+                <a href="#collection" class="hover:text-black text-blue-800 transition">Collection</a>
+                <a href="#rental"     class="hover:text-black text-blue-800 transition">Rental</a>
+                <a href="#tailoring"  class="hover:text-black text-blue-800 transition">Tailoring</a>
+                <a href="#contact"    class="hover:text-black text-blue-800 transition">Contact</a>
+            </nav>
+
+            <!-- Icons -->
+            <div class="flex items-center space-x-4 text-blue-800">
+                <a href="#" class="hover:text-rose-600 transition">
+                    <i class="fas fa-user text-lg"></i>
+                </a>
+                <a href="#" class="relative hover:text-rose-600 transition">
+                    <i class="fas fa-shopping-bag text-lg"></i>
+                    <span class="absolute -top-1 -right-2 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Chat Now & Mobile Menu -->
+        <div class="flex items-center space-x-4">
+            <a href="https://wa.me/918320450187?text=Hello%2C%20" 
+               target="_blank" 
+               class="bg-blue-800 text-white px-4 py-2 rounded-full text-sm font-medium transition flex items-center space-x-2 hover:bg-green-600">
+               <i class="fab fa-whatsapp text-lg"></i>
+               <span class="hidden sm:inline">Chat Now</span>
+            </a>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden text-gray-700 focus:outline-none" id="menu-toggle">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="md:hidden hidden bg-white/20 backdrop-blur-md px-4 py-3 shadow-lg" id="mobile-menu">
+        <!-- Mobile Search -->
+        <div class="relative mb-3">
+            <input type="text" placeholder="Search..." 
+                   class="w-full px-4 py-2 rounded-full border border-white/30 bg-white/30 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-rose-300 backdrop-blur-sm">
+            <button class="absolute right-3 top-2 text-rose-600">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Nav Links -->
+        <nav class="space-y-2">
+            <a href="#home" class="block py-2 px-3 rounded hover:bg-rose-50 text-rose-800 font-medium">Home</a>
+            <a href="#collection" class="block py-2 px-3 rounded hover:bg-rose-50 text-gray-700">Collection</a>
+            <a href="#rental" class="block py-2 px-3 rounded hover:bg-rose-50 text-gray-700">Rental</a>
+            <a href="#tailoring" class="block py-2 px-3 rounded hover:bg-rose-50 text-gray-700">Tailoring</a>
+            <a href="#contact" class="block py-2 px-3 rounded hover:bg-rose-50 text-gray-700">Contact</a>
+        </nav>
+
+        <!-- Mobile Icons -->
+        <div class="flex justify-between mt-4 px-2 text-gray-600">
+            <a href="#" class="hover:text-rose-600 p-2">
+                <i class="fas fa-user text-lg"></i>
+            </a>
+            <a href="#" class="relative hover:text-rose-600 p-2">
+                <i class="fas fa-shopping-bag text-lg"></i>
+                <span class="absolute -top-1 right-1 bg-rose-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+            </a>
+        </div>  
+    </div>
+</header>
+
+
+<!-- 🌈 HERO SLIDER SECTION ===============================================================================================================================-->
+
+
+<section id="hero" class="relative w-full overflow-hidden mt-24">
+  <div class="slider-container aspect-5-4">
+    <div class="slider flex transition-transform duration-700 ease-in-out h-full">
+
+      <!-- 🖼️ Slide 1 -->
+      <div class="slide min-w-full h-full relative">
+        <img 
+          src="images/blog.png" 
+          alt="Slide 1"
+          class="w-full h-full object-cover"
+        >
+        <!-- <div class="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white text-center">
+          <h2 class="text-2xl sm:text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">
+            Explore Joyful Toys
+          </h2>
+          <p class="text-sm sm:text-lg md:text-xl drop-shadow-md">Fun for every little dreamer</p>
+        </div> -->
+      </div>
+
+    </div>
+
+  
+  </div>
+</section>
+
+
+
+
+
+<!-- 🧸 PRODUCTS SECTION -->
+<section id="products" class="p-3 pt-8 bg-blue-200">
+  <h2 class="text-3xl font-bold text-center mb-1 text-blue-900">Our Toys</h2>
+  <h2 class="text-md font-bold text-center mb-6 text-blue-900">Kids Favorite Toys</h2>
+  <main class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
+    <!-- Product cards generated by JS -->
+  </main>
+</section>
+
+<script>
+  const slider = document.querySelector('.slider');
+  const slides = document.querySelectorAll('.slide');motvelmomotivat
+  let index = 0;
+
+  function showSlide(i) {
+    index = (i + slides.length) % slides.length;
+    slider.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => showSlide(index - 1));
+  document.getElementById('next').addEventListener('click', () => showSlide(index + 1));
+
+  setInterval(() => showSlide(index + 1), 4000);
+</script>
+
+
+
+
+  <!-- 💖 ABOUT SECTION -->
+  <section id="about" class="py-16 bg-white text-center">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-bold mb-4 text-black">About Toy Paradise</h2>
+      <p class="text-gray-700 text-lg leading-relaxed">
+        We’re passionate about bringing happiness to kids with creative, safe, and colorful toys.  
+        Every product is designed with care to spark imagination and joy.  
+        Whether it’s a teddy bear or a racing car — we deliver smiles, one toy at a time.
+      </p>
+    </div>
+  </section>
+
+  <!-- 🌟 FEATURES SECTION -->
+  <section id="features" class="py-16 bg-blue-100">
+    <h2 class="text-3xl font-bold text-center mb-10 text-black">Why Choose Us?</h2>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6">
+      <div class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
+        <img src="https://cdn-icons-png.flaticon.com/512/1484/1484814.png" class="w-16 mx-auto mb-3" alt="">
+        <h3 class="font-bold text-lg mb-2 text-pink-600">Premium Quality</h3>
+        <p class="text-gray-600 text-sm">All toys are made from safe, durable, and eco-friendly materials.</p>
+      </div>
+      <div class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
+        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077994.png" class="w-16 mx-auto mb-3" alt="">
+        <h3 class="font-bold text-lg mb-2 text-pink-600">Happy Kids</h3>
+        <p class="text-gray-600 text-sm">Our toys spark creativity and make learning fun for every child.</p>
+      </div>
+      <div class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
+        <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" class="w-16 mx-auto mb-3" alt="">
+        <h3 class="font-bold text-lg mb-2 text-pink-600">Fast Delivery</h3>
+        <p class="text-gray-600 text-sm">Quick and reliable shipping to bring joy straight to your doorstep.</p>
+      </div>
+      <div class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
+        <img src="https://cdn-icons-png.flaticon.com/512/929/929564.png" class="w-16 mx-auto mb-3" alt="">
+        <h3 class="font-bold text-lg mb-2 text-pink-600">Affordable Prices</h3>
+        <p class="text-gray-600 text-sm">Enjoy top-quality toys without breaking the bank.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 📞 FOOTER -->
+  <footer id="contact" class="bg-blue-800 text-pink-200 text-center py-8">
+    <h3 class="text-xl font-semibold mb-3">Follow Us</h3>
+    <div class="flex justify-center space-x-6 text-2xl mb-4">
+      <a href="#" class="hover:text-white">🌐</a>
+      <a href="#" class="hover:text-white">📸</a>
+      <a href="#" class="hover:text-white">📘</a>
+      <a href="#" class="hover:text-white">🐦</a>
+    </div>
+    <p class="text-sm">© 2025 Toy Paradise. All rights reserved.</p>
+  </footer>
+
+  <!-- Product Data Script -->
+  <script src="script.js"></script>
+
+
+  
+</body>
+</html>
+

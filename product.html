@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail | Toy Paradise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+  
+    .fade-in { animation: fadeIn .6s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .zoom { transition: transform .2s; }
+    .zoom:hover { transform: scale(1.05); }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .slide-in { animation: slideIn 0.5s ease-out; }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .bg-gradient-custom { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .bg-gradient-secondary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+
+  </style>
+</head>
+
+<body class="bg-gradient-custom min-h-screen">
+
+  <!-- 🔙 Back Button -->
+  <button onclick="history.back()" class="bg-white/20 backdrop-blur-sm text-white px-5 py-3 rounded-xl ml-4 mt-4 shadow-lg hover:bg-white/30 transition-all duration-300">
+    <i class="fas fa-arrow-left mr-2"></i> Back to Products
+  </button>
+
+  <!-- 🌟 Product Container -->
+  <div id="productDetail" class="fade-in max-w-6xl mx-auto mt-8 p-6 bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl">
+    Loading product...
+  </div>
+
+  <!-- 🛒 Cart Notification -->
+  <div id="cartNotification" class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-xl shadow-2xl hidden slide-in z-50">
+    <i class="fas fa-check-circle mr-2"></i> Product added to cart!
+  </div>
+
+  <!-- ❓ Product Inquiry Modal -->
+  <div id="inquiryModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-6 w-11/12 max-w-md slide-in">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">Product Inquiry</h3>
+        <button onclick="closeInquiryModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <p class="mb-4">Have questions about this product? Our team is here to help!</p>
+      <div class="space-y-4">
+        <input type="text" id="inquiryName" placeholder="Your Name" class="w-full p-3 border rounded-lg">
+        <input type="email" id="inquiryEmail" placeholder="Your Email" class="w-full p-3 border rounded-lg">
+        <textarea id="inquiryMessage" placeholder="Your Question" class="w-full p-3 border rounded-lg h-32"></textarea>
+        <button onclick="sendInquiry()" class="w-full bg-gradient-secondary text-white py-3 rounded-lg font-bold">
+          Send Inquiry
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ✅ Load Product from LocalStorage
+const product = JSON.parse(localStorage.getItem("selectedProduct"));
+const container = document.getElementById("productDetail");
+
+// Mock product data if none exists (for demo purposes)
+const mockProduct = {
+  name: "Premium Building Blocks Set",
+  price: 1299,
+  description: "This amazing educational building blocks set helps develop creativity, problem-solving skills, and fine motor abilities in children. Made from high-quality, non-toxic materials that are safe for kids of all ages.",
+  image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  image2: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  image3: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  image4: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  image5: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+  rating: 4.5,
+  reviews: 128,
+  inStock: true,
+  features: ["Educational", "Safe Materials", "Develops Creativity", "100+ Pieces"],
+  ageRange: "3-8 years",
+  brand: "CreativeKids"
+};
+
+// Use mock product if none exists
+const displayProduct = product || mockProduct;
+
+if(displayProduct) {
+  container.innerHTML = `
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+    <!-- 🖼️ Product Images -->
+    <div>
+      <div class="rounded-3xl bg-gradient-to-br from-blue-50 to-purple-50 overflow-hidden shadow-lg relative">
+        <img id="mainImage" src="${displayProduct.image}" class="w-full h-80 md:h-96 object-cover cursor-zoom-in">
+        ${displayProduct.inStock === false ? '<div class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">Out of Stock</div>' : ''}
+        <div class="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold">
+          <i class="fas fa-expand-alt mr-1"></i> Click to zoom
+        </div>
+      </div>
+
+      <!-- 🔍 Small thumbnails -->
+      <div class="grid grid-cols-5 gap-3 mt-4">
+        <img src="${displayProduct.image}" onclick="changeMainImage(this.src)" class="rounded-lg cursor-pointer border-2 border-blue-400 zoom">
+        <img src="${displayProduct.image2}" onclick="changeMainImage(this.src)" class="rounded-lg cursor-pointer border border-gray-200 hover:border-blue-400 zoom">
+        <img src="${displayProduct.image3}" onclick="changeMainImage(this.src)" class="rounded-lg cursor-pointer border border-gray-200 hover:border-blue-400 zoom">
+        <img src="${displayProduct.image4}" onclick="changeMainImage(this.src)" class="rounded-lg cursor-pointer border border-gray-200 hover:border-blue-400 zoom">
+        <img src="${displayProduct.image5}" onclick="changeMainImage(this.src)" class="rounded-lg cursor-pointer border border-gray-200 hover:border-blue-400 zoom">
+      </div>
+    </div>
+
+    <!-- 📝 Product Info -->
+    <div class="space-y-6">
+      <div class="flex justify-between items-start">
+        <h1 class="text-4xl font-extrabold text-gray-900">${displayProduct.name}</h1>
+        <button onclick="toggleWishlist()" id="wishlistBtn" class="text-gray-400 hover:text-red-500 text-2xl">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+      
+      <!-- Rating -->
+      <div class="flex items-center">
+        <div class="flex text-yellow-400">
+          ${generateStarRating(displayProduct.rating)}
+        </div>
+        <span class="ml-2 text-gray-600">${displayProduct.rating} (${displayProduct.reviews} reviews)</span>
+      </div>
+      
+      <p class="text-green-700 text-3xl font-bold pulse">₹${displayProduct.price}</p>
+      
+     
+      <p class="text-gray-600 leading-relaxed">${displayProduct.description || "This amazing toy brings joy and learning together!"}</p>
+
+      <!-- Product Details -->
+      <div class="bg-gray-50 p-4 rounded-xl">
+        <h3 class="font-bold text-lg mb-2">Product Details</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <div><span class="font-semibold">Age Range:</span> ${displayProduct.ageRange || "3-8 years"}</div>
+          <div><span class="font-semibold">Brand:</span> ${displayProduct.brand || "Toy Paradise"}</div>
+          <div class="col-span-2"><span class="font-semibold">Features:</span> ${displayProduct.features ? displayProduct.features.join(", ") : "Educational, Safe, Creative"}</div>
+        </div>
+      </div>
+
+      <!-- 🔢 Quantity & Variants -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="font-semibold">Quantity:</label>
+          <div class="flex items-center mt-1">
+            <button onclick="decreaseQuantity()" class="bg-gray-200 w-10 h-10 rounded-l-lg flex items-center justify-center">
+              <i class="fas fa-minus"></i>
+            </button>
+            <input id="quantity" type="number" value="1" min="1" max="10" class="w-16 h-10 text-center border-y">
+            <button onclick="increaseQuantity()" class="bg-gray-200 w-10 h-10 rounded-r-lg flex items-center justify-center">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <label class="font-semibold">Color:</label>
+          <select class="w-full p-2 border rounded-lg mt-1">
+            <option>Multi-color</option>
+            <option>Blue</option>
+            <option>Red</option>
+            <option>Green</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 🛒 CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 mt-6">
+        <!-- Add to Cart -->
+        <button onclick="addToCart()" ${!displayProduct.inStock ? 'disabled' : ''}
+        class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-xl font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${!displayProduct.inStock ? 'opacity-50 cursor-not-allowed' : ''}">
+          <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+        </button>
+
+        <!-- Buy Now -->
+        <button class="flex-1 bg-blue-600 hover:bg-pink-700 text-white py-3 rounded-xl font-semibold shadow-md transition"
+  onclick="window.location.href='form-page.html'"
+>
+  BUY  
+</button>
+
+      </div>
+      
+      <!-- Additional Actions -->
+      <div class="flex justify-center space-x-6 pt-4 border-t">
+        <button onclick="openInquiryModal()" class="text-blue-600 hover:text-blue-800 flex flex-col items-center">
+          <i class="fas fa-question-circle text-xl mb-1"></i>
+          <span class="text-sm">Ask a Question</span>
+        </button>
+        <button onclick="shareProduct()" class="text-purple-600 hover:text-purple-800 flex flex-col items-center">
+          <i class="fas fa-share-alt text-xl mb-1"></i>
+          <span class="text-sm">Share</span>
+        </button>
+        <button class="text-gray-600 hover:text-gray-800 flex flex-col items-center">
+          <i class="fas fa-balance-scale text-xl mb-1"></i>
+          <span class="text-sm">Compare</span>
+        </button>
+      </div>
+
+      <!-- ✅ Highlights -->
+      <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
+        <h3 class="font-bold text-lg mb-3">Why Shop With Us?</h3>
+        <ul class="grid grid-cols-2 gap-3 text-sm">
+          <li class="flex items-center">
+            <i class="fas fa-shipping-fast text-blue-500 mr-2"></i>
+            <span><b>Free Delivery</b> over ₹499</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-award text-green-500 mr-2"></i>
+            <span><b>100% Quality</b> Guarantee</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-undo-alt text-purple-500 mr-2"></i>
+            <span><b>7-Day Return</b> Policy</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-shield-alt text-red-500 mr-2"></i>
+            <span><b>Secure</b> Payment</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+  
+  <!-- 📋 Product Tabs -->
+  <div class="mt-12">
+    <div class="border-b">
+      <div class="flex space-x-8">
+        <button id="descriptionTab" class="py-3 font-semibold border-b-2 border-blue-500 text-blue-500">Description</button>
+        <button id="specsTab" class="py-3 font-semibold text-gray-500 hover:text-blue-500">Specifications</button>
+        <button id="reviewsTab" class="py-3 font-semibold text-gray-500 hover:text-blue-500">Reviews</button>
+      </div>
+    </div>
+    
+    <div id="descriptionContent" class="py-6">
+      <p>${displayProduct.description || "This amazing toy brings joy and learning together!"}</p>
+      <p class="mt-4">Our premium building blocks are designed to stimulate creativity and problem-solving skills in children. Made from high-quality, non-toxic materials that are safe for kids of all ages. The set includes 100+ colorful pieces that can be combined in countless ways to create structures, vehicles, animals, and more.</p>
+    </div>
+    
+    <div id="specsContent" class="py-6 hidden">
+      <div class="grid grid-cols-2 gap-4">
+        <div><span class="font-semibold">Material:</span> ABS Plastic / Metal</div>
+        <div><span class="font-semibold">Age Range:</span> 2-8 years</div>
+        <div><span class="font-semibold">Number of Pieces: </span> 1 </div>
+        <div><span class="font-semibold">Brand:</span> Toyona </div>
+        <div><span class="font-semibold">Safety Certification: </span>ISI / BIS Certified</div>
+        <div><span class="font-semibold">Safety Standards:</span> ASTM F963, EN71</div>
+        <div><span class="font-semibold">Non-Toxic: </span>Yes ✅</div>
+        <div><span class="font-semibold">Packaging Type: </span>Box / Plastic Wrap</div>
+        <div><span class="font-semibold">Made In: </span>Made In</div>
+      </div>
+    </div>
+    
+    <div id="reviewsContent" class="py-6 hidden">
+      <div class="flex items-center mb-6">
+        <div class="text-4xl font-bold mr-4">${displayProduct.rating}</div>
+        <div>
+          <div class="flex text-yellow-400 text-lg">
+            ${generateStarRating(displayProduct.rating)}
+          </div>
+          <div class="text-gray-600">Based on ${displayProduct.reviews} reviews</div>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="border-b pb-4">
+          <div class="flex justify-between">
+            <div class="font-semibold">Priya Sharma</div>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+          </div>
+          <p class="mt-2 text-gray-600">My daughter loves this set! The pieces are high quality and fit together perfectly.</p>
+        </div>
+        
+        <div class="border-b pb-4">
+          <div class="flex justify-between">
+            <div class="font-semibold">Rahul Verma</div>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+            </div>
+          </div>
+          <p class="mt-2 text-gray-600">Great educational toy. My son spends hours building different structures.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+  
+  // Set up tab functionality
+  setupTabs();
+}
+
+// Generate star rating HTML
+function generateStarRating(rating) {
+  let stars = '';
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  
+  for (let i = 0; i < fullStars; i++) {
+    stars += '<i class="fas fa-star"></i>';
+  }
+  
+  if (hasHalfStar) {
+    stars += '<i class="fas fa-star-half-alt"></i>';
+  }
+  
+  const emptyStars = 5 - Math.ceil(rating);
+  for (let i = 0; i < emptyStars; i++) {
+    stars += '<i class="far fa-star"></i>';
+  }
+  
+  return stars;
+}
+
+// Set up tab functionality
+function setupTabs() {
+  const descriptionTab = document.getElementById('descriptionTab');
+  const specsTab = document.getElementById('specsTab');
+  const reviewsTab = document.getElementById('reviewsTab');
+  
+  const descriptionContent = document.getElementById('descriptionContent');
+  const specsContent = document.getElementById('specsContent');
+  const reviewsContent = document.getElementById('reviewsContent');
+  
+  descriptionTab.addEventListener('click', () => {
+    descriptionContent.classList.remove('hidden');
+    specsContent.classList.add('hidden');
+    reviewsContent.classList.add('hidden');
+    
+    descriptionTab.classList.add('border-b-2', 'border-blue-500', 'text-blue-500');
+    specsTab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+    reviewsTab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+    
+    descriptionTab.classList.remove('text-gray-500');
+    specsTab.classList.add('text-gray-500');
+    reviewsTab.classList.add('text-gray-500');
+  });
+  
+  specsTab.addEventListener('click', () => {
+    descriptionContent.classList.add('hidden');
+    specsContent.classList.remove('hidden');
+    reviewsContent.classList.add('hidden');
+    
+    descriptionTab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+    specsTab.classList.add('border-b-2', 'border-blue-500', 'text-blue-500');
+    reviewsTab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+    
+    descriptionTab.classList.add('text-gray-500');
+    specsTab.classList.remove('text-gray-500');
+    reviewsTab.classList.add('text-gray-500');
+  });
+  
+  reviewsTab.addEventListener('click', () => {
+    descriptionContent.classList.add('hidden');
+    specsContent.classList.add('hidden');
+    reviewsContent.classList.remove('hidden');
+    
+    descriptionTab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+    specsTab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+    reviewsTab.classList.add('border-b-2', 'border-blue-500', 'text-blue-500');
+    
+    descriptionTab.classList.add('text-gray-500');
+    specsTab.classList.add('text-gray-500');
+    reviewsTab.classList.remove('text-gray-500');
+  });
+}
+
+// Change main product image
+function changeMainImage(src) {
+  document.getElementById('mainImage').src = src;
+  
+  // Update active thumbnail
+  const thumbnails = document.querySelectorAll('.grid.grid-cols-5 img');
+  thumbnails.forEach(thumb => {
+    thumb.classList.remove('border-2', 'border-blue-400');
+    thumb.classList.add('border', 'border-gray-200');
+  });
+  
+  event.target.classList.remove('border', 'border-gray-200');
+  event.target.classList.add('border-2', 'border-blue-400');
+}
+
+// Quantity controls
+function increaseQuantity() {
+  const quantityInput = document.getElementById('quantity');
+  let currentValue = parseInt(quantityInput.value);
+  if (currentValue < 10) {
+    quantityInput.value = currentValue + 1;
+  }
+}
+
+function decreaseQuantity() {
+  const quantityInput = document.getElementById('quantity');
+  let currentValue = parseInt(quantityInput.value);
+  if (currentValue > 1) {
+    quantityInput.value = currentValue - 1;
+  }
+}
+
+// Toggle wishlist
+function toggleWishlist() {
+  const wishlistBtn = document.getElementById('wishlistBtn');
+  const icon = wishlistBtn.querySelector('i');
+  
+  if (icon.classList.contains('far')) {
+    icon.classList.remove('far');
+    icon.classList.add('fas', 'text-red-500');
+    showNotification('Product added to wishlist!', 'red');
+  } else {
+    icon.classList.remove('fas', 'text-red-500');
+    icon.classList.add('far');
+    showNotification('Product removed from wishlist!', 'gray');
+  }
+}
+
+// Show notification
+function showNotification(message, color = 'green') {
+  const notification = document.getElementById('cartNotification');
+  notification.innerHTML = `<i class="fas fa-${color === 'green' ? 'check' : 'info'}-circle mr-2"></i> ${message}`;
+  notification.className = `fixed bottom-4 right-4 bg-${color}-500 text-white p-4 rounded-xl shadow-2xl slide-in z-50`;
+  notification.classList.remove('hidden');
+  
+  setTimeout(() => {
+    notification.classList.add('hidden');
+  }, 3000);
+}
+
+// ✅ Send to Form Page (Auto Pass Product Name & Quantity)
+function addToCart() {
+  if (!displayProduct.inStock) {
+    showNotification('Product is out of stock!', 'red');
+    return;
+  }
+  
+  let qty = document.getElementById("quantity").value;
+  
+  // In a real app, you would add to cart here
+  showNotification('Product added to cart!');
+  
+  // For demo purposes, we'll simulate adding to cart
+  setTimeout(() => {
+    window.location.href = `form-page.html?product=${encodeURIComponent(displayProduct.name)}&price=${displayProduct.price}&qty=${qty}`;
+  }, 1000);
+}
+
+// ✅ Direct WhatsApp Checkout
+function buyNow() {
+  if (!displayProduct.inStock) {
+    showNotification('Product is out of stock!', 'red');
+    return;
+  }
+  
+  const qty = document.getElementById("quantity").value;
+  const whatsappNumber = "918320450187"; // ✅ Your WhatsApp Number
+  
+  const text = `
+📦 *New Order - Toy Paradise*
+🎁 Product: ${displayProduct.name}
+💰 Price: ₹${displayProduct.price}
+🔢 Quantity: ${qty}
+🛒 Total: ₹${displayProduct.price * qty}
+  `;
+  
+  window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, "_blank");
+}
+
+// Share product
+function shareProduct() {
+  if (navigator.share) {
+    navigator.share({
+      title: displayProduct.name,
+      text: 'Check out this amazing product from Toy Paradise!',
+      url: window.location.href,
+    })
+    .then(() => console.log('Successful share'))
+    .catch((error) => console.log('Error sharing', error));
+  } else {
+    // Fallback for browsers that don't support Web Share API
+    navigator.clipboard.writeText(window.location.href);
+    showNotification('Product link copied to clipboard!');
+  }
+}
+
+// Product inquiry modal
+function openInquiryModal() {
+  document.getElementById('inquiryModal').classList.remove('hidden');
+}
+
+function closeInquiryModal() {
+  document.getElementById('inquiryModal').classList.add('hidden');
+}
+
+function sendInquiry() {
+  const name = document.getElementById('inquiryName').value;
+  const email = document.getElementById('inquiryEmail').value;
+  const message = document.getElementById('inquiryMessage').value;
+  
+  if (!name || !email || !message) {
+    showNotification('Please fill all fields!', 'red');
+    return;
+  }
+  
+  // In a real app, you would send this data to your server
+  showNotification('Inquiry sent successfully! We will contact you soon.');
+  closeInquiryModal();
+  
+  // Clear form
+  document.getElementById('inquiryName').value = '';
+  document.getElementById('inquiryEmail').value = '';
+  document.getElementById('inquiryMessage').value = '';
+}
+</script>
+
+</body>
+</html>
